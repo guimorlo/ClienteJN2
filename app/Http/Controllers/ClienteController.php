@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Requests\StoreUpdateCliente;
 use Illuminate\Http\Request;
 
 /**
@@ -18,10 +19,10 @@ class ClienteController extends Controller
 
     /**
      * Cria um novo registro de cliente.
-     * @param Request $Request
+     * @param StoreUpdateCliente $Request
      * @return mixed
      */
-    public function store(Request $Request)
+    public function store(StoreUpdateCliente $Request)
     {
         return $this->repository->create($Request->all());
     }
@@ -38,7 +39,7 @@ class ClienteController extends Controller
             return response($Cliente);
 
         }
-        return response("Não existe cliente de código $id", 500);
+        return response()->json([ 'message' => "Não existe cliente de código $id" ], 422);
     }
 
     /**
@@ -50,29 +51,34 @@ class ClienteController extends Controller
     {
         $Cliente = $this->repository->where('id', $id)->first();
         if ($Cliente) {
-            return $Cliente->delete();
+            return response()->json($Cliente->delete());
         }
-        return response("Cliende de id $id não está cadastrado na base", 500);
+        return response()->json([ 'message' => "Não existe cliente de código $id" ], 422);
     }
 
     /**
      * Atualiza um registro de cliente.
-     * @param Request $Request
+     * @param StoreUpdateCliente $Request
      * @param integer $id
      * @return bool
      */
-    public function update(Request $Request, $id)
+    public function update(StoreUpdateCliente $Request, $id)
     {
         $Cliente = $this->repository->where('id', $id)->first();
         if ($Cliente) {
             if ($Cliente->update($Request->all())) {
                 return response($Cliente);
             }
-            return response('Não foi possível atualizar o registro'. 500);
+            return response()->json('Não foi possível atualizar o registro'. 500);
         }
-        return response("Cliende de id $id não está cadastrado na base", 501);
+        return response()->json([ 'message' => "Não existe cliente de código $id" ], 422);
     }
 
+    /**
+     * Busca todos os Clientes com final da placa igual ao parâmetro informado.
+     * @param $numero
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function searchByLastPlateNumber($numero)
     {
         return response($this->repository->searchByLastPlateNumber($numero));

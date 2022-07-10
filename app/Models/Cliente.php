@@ -15,7 +15,8 @@ class Cliente extends \Illuminate\Database\Eloquent\Model
      * @param $number
      * @return $this[]
      */
-    public function searchByLastPlateNumber($number) {
+    public function searchByLastPlateNumber($number)
+    {
         return $this->where('placa_carro', 'LIKE', "%{$number}")->get();
     }
 
